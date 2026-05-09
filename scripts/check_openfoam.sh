@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ -z "${WM_PROJECT_VERSION:-}" ] && [ -f /opt/openfoam13/etc/bashrc ]; then
+    . /opt/openfoam13/etc/bashrc
+fi
+
 echo "======================================"
 echo "Checking OpenFOAM environment"
 echo "======================================"
@@ -13,7 +17,7 @@ echo "WM_PROJECT_DIR    = ${WM_PROJECT_DIR:-Not set}"
 echo
 echo "Important OpenFOAM commands:"
 
-for cmd in blockMesh icoFoam simpleFoam paraFoam; do
+for cmd in blockMesh checkMesh foamRun paraFoam; do
     if command -v "$cmd" >/dev/null 2>&1; then
         echo "$cmd: $(command -v "$cmd")"
     else
