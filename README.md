@@ -5,16 +5,32 @@ This repository provides a pre-built Docker environment for running OpenFOAM ass
 Students do **not** need to install OpenFOAM manually.  
 They only need to install Docker and use the provided course image.
 
+---
+
 ## Docker Image
 
+The course image is:
+
 ```bash
-ghcr.io/jianxunz/openfoam-course-2026:1.0
+ghcr.io/jianxunz/openfoam-course-2026:openfoam13
+```
+
+Equivalent short tag:
+
+```bash
+ghcr.io/jianxunz/openfoam-course-2026:13
 ```
 
 OpenFOAM version:
 
-```bash
-OpenFOAM v2512
+```text
+OpenFOAM Foundation v13
+```
+
+This is the OpenFOAM version from:
+
+```text
+https://openfoam.org/version/13/
 ```
 
 ---
@@ -35,6 +51,9 @@ After installation, check Docker with:
 docker --version
 ```
 
+Students do **not** need to install Ubuntu or OpenFOAM directly.  
+The Docker container provides an Ubuntu-based OpenFOAM environment internally.
+
 ---
 
 # 2. Pull the Course Image
@@ -42,20 +61,26 @@ docker --version
 Run:
 
 ```bash
-docker pull ghcr.io/jianxunz/openfoam-course-2026:1.0
+docker pull ghcr.io/jianxunz/openfoam-course-2026:openfoam13
 ```
 
-If you are using Linux and Docker requires administrator permission, use:
+or:
 
 ```bash
-sudo docker pull ghcr.io/jianxunz/openfoam-course-2026:1.0
+docker pull ghcr.io/jianxunz/openfoam-course-2026:13
+```
+
+On some Linux systems, Docker may require administrator permission:
+
+```bash
+sudo docker pull ghcr.io/jianxunz/openfoam-course-2026:openfoam13
 ```
 
 ---
 
 # 3. Create a Working Folder
 
-Create a folder where your OpenFOAM assignment results will be saved:
+Create a folder where your OpenFOAM assignment files and results will be saved:
 
 ```bash
 mkdir OpenFOAM_assignment
@@ -72,7 +97,7 @@ cd OpenFOAM_assignment
 docker run --rm -it \
   --mount type=bind,src="$(pwd)",target=/work \
   -w /work \
-  ghcr.io/jianxunz/openfoam-course-2026:1.0
+  ghcr.io/jianxunz/openfoam-course-2026:openfoam13
 ```
 
 If Docker requires administrator permission:
@@ -81,7 +106,7 @@ If Docker requires administrator permission:
 sudo docker run --rm -it \
   --mount type=bind,src="$(pwd)",target=/work \
   -w /work \
-  ghcr.io/jianxunz/openfoam-course-2026:1.0
+  ghcr.io/jianxunz/openfoam-course-2026:openfoam13
 ```
 
 ## Windows PowerShell
@@ -90,10 +115,10 @@ sudo docker run --rm -it \
 docker run --rm -it `
   --mount "type=bind,src=${PWD},target=/work" `
   -w /work `
-  ghcr.io/jianxunz/openfoam-course-2026:1.0
+  ghcr.io/jianxunz/openfoam-course-2026:openfoam13
 ```
 
-After running this command, you are inside a Linux Docker container where OpenFOAM is already available.
+After running this command, you are inside a Linux Docker container where OpenFOAM Foundation v13 is already available.
 
 ---
 
@@ -105,13 +130,13 @@ Inside the Docker container, run:
 /course/scripts/check_openfoam.sh
 ```
 
-You should see output including:
+Expected output should include:
 
-```bash
-WM_PROJECT_VERSION=2512
+```text
+WM_PROJECT_VERSION=13
 blockMesh
-icoFoam
-simpleFoam
+checkMesh
+foamRun
 ```
 
 You can also check manually:
@@ -119,28 +144,36 @@ You can also check manually:
 ```bash
 echo $WM_PROJECT_VERSION
 which blockMesh
-which simpleFoam
+which foamRun
+```
+
+Expected version:
+
+```text
+13
 ```
 
 ---
 
-# 6. Run the Test Cavity Case
+# 6. Run the Test Case
+
+For OpenFOAM Foundation v13, the test case uses the `pitzDailySteady` tutorial.
 
 Inside the Docker container, run:
 
 ```bash
-/course/scripts/run_test_cavity.sh
+/course/scripts/run_test_pitzDailySteady.sh
 ```
 
 This script will:
 
-1. Copy the standard OpenFOAM cavity tutorial.
+1. Copy the OpenFOAM v13 `pitzDailySteady` tutorial.
 2. Run `blockMesh`.
-3. Run `icoFoam`.
+3. Run `foamRun`.
 4. Save the results in:
 
 ```bash
-/work/cavity_test
+/work/pitzDailySteady_test
 ```
 
 Because `/work` is connected to your local folder, the results are also saved on your own computer.
@@ -164,7 +197,7 @@ ls
 You should see:
 
 ```bash
-cavity_test
+pitzDailySteady_test
 ```
 
 This folder contains the OpenFOAM case and simulation results.
@@ -179,7 +212,7 @@ When you run:
 docker run --rm -it \
   --mount type=bind,src="$(pwd)",target=/work \
   -w /work \
-  ghcr.io/jianxunz/openfoam-course-2026:1.0
+  ghcr.io/jianxunz/openfoam-course-2026:openfoam13
 ```
 
 your local folder is connected to the Docker container:
@@ -193,12 +226,14 @@ OpenFOAM_assignment      <-->    /work
 Therefore:
 
 ```text
-Inside Docker: /work/cavity_test
-On your computer: OpenFOAM_assignment/cavity_test
+Inside Docker: /work/pitzDailySteady_test
+On your computer: OpenFOAM_assignment/pitzDailySteady_test
 ```
 
 OpenFOAM is not installed directly on your computer.  
 It is running inside Docker.
+
+The `--rm` option removes the temporary container after you exit, but your simulation files remain in your local mounted folder.
 
 ---
 
@@ -209,10 +244,36 @@ Inside the container, you can use standard OpenFOAM commands, for example:
 ```bash
 blockMesh
 checkMesh
-icoFoam
-simpleFoam
+foamRun
 postProcess
+paraFoam
 ```
+
+For OpenFOAM Foundation v13, many tutorials use:
+
+```bash
+blockMesh
+foamRun
+```
+
+rather than older solver-specific commands such as `icoFoam` or `simpleFoam`.
+
+---
+
+# macOS Notes
+
+The container works on macOS through Docker Desktop.
+
+For Apple Silicon Macs, such as M1, M2, M3, or M4, the following command may be needed if there is a platform compatibility issue:
+
+```bash
+docker run --platform linux/amd64 --rm -it \
+  --mount type=bind,src="$(pwd)",target=/work \
+  -w /work \
+  ghcr.io/jianxunz/openfoam-course-2026:openfoam13
+```
+
+This may be slower because it can use emulation, but it should be acceptable for small assignment cases.
 
 ---
 
@@ -222,7 +283,7 @@ postProcess
 
 If you see:
 
-```bash
+```text
 manifest unknown
 ```
 
@@ -237,7 +298,13 @@ ghcr.io/jianxunz/openfoam-course-2026:1.
 Correct:
 
 ```bash
-ghcr.io/jianxunz/openfoam-course-2026:1.0
+ghcr.io/jianxunz/openfoam-course-2026:openfoam13
+```
+
+or:
+
+```bash
+ghcr.io/jianxunz/openfoam-course-2026:13
 ```
 
 ---
@@ -246,7 +313,7 @@ ghcr.io/jianxunz/openfoam-course-2026:1.0
 
 If you see:
 
-```bash
+```text
 permission denied while trying to connect to the docker API
 ```
 
@@ -256,7 +323,7 @@ use `sudo`:
 sudo docker run --rm -it \
   --mount type=bind,src="$(pwd)",target=/work \
   -w /work \
-  ghcr.io/jianxunz/openfoam-course-2026:1.0
+  ghcr.io/jianxunz/openfoam-course-2026:openfoam13
 ```
 
 Alternatively, on Linux, the user can be added to the Docker group:
@@ -267,6 +334,8 @@ sudo usermod -aG docker $USER
 newgrp docker
 ```
 
+After this, log out and log in again if needed.
+
 ---
 
 ## Problem 3: Results disappear after exiting Docker
@@ -276,7 +345,7 @@ This usually happens if Docker is started without mounting a local folder.
 Wrong:
 
 ```bash
-docker run --rm -it ghcr.io/jianxunz/openfoam-course-2026:1.0
+docker run --rm -it ghcr.io/jianxunz/openfoam-course-2026:openfoam13
 ```
 
 Correct:
@@ -285,17 +354,40 @@ Correct:
 docker run --rm -it \
   --mount type=bind,src="$(pwd)",target=/work \
   -w /work \
-  ghcr.io/jianxunz/openfoam-course-2026:1.0
+  ghcr.io/jianxunz/openfoam-course-2026:openfoam13
 ```
 
 The `--mount` option is important because it saves `/work` to your local folder.
 
 ---
 
+## Problem 4: OpenFOAM command not found
+
+Inside the container, run:
+
+```bash
+/course/scripts/check_openfoam.sh
+```
+
+or manually source OpenFOAM:
+
+```bash
+source /opt/openfoam13/etc/bashrc
+```
+
+Then check:
+
+```bash
+echo $WM_PROJECT_VERSION
+which blockMesh
+```
+
+---
+
 # Minimal Command Summary
 
 ```bash
-docker pull ghcr.io/jianxunz/openfoam-course-2026:1.0
+docker pull ghcr.io/jianxunz/openfoam-course-2026:openfoam13
 
 mkdir OpenFOAM_assignment
 cd OpenFOAM_assignment
@@ -303,14 +395,14 @@ cd OpenFOAM_assignment
 docker run --rm -it \
   --mount type=bind,src="$(pwd)",target=/work \
   -w /work \
-  ghcr.io/jianxunz/openfoam-course-2026:1.0
+  ghcr.io/jianxunz/openfoam-course-2026:openfoam13
 ```
 
 Inside Docker:
 
 ```bash
 /course/scripts/check_openfoam.sh
-/course/scripts/run_test_cavity.sh
+/course/scripts/run_test_pitzDailySteady.sh
 ```
 
 Exit:
@@ -328,5 +420,5 @@ ls
 You should see:
 
 ```bash
-cavity_test
+pitzDailySteady_test
 ```
