@@ -1,0 +1,69 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7
+     \\/     M anipulation  |
+# Author1: Nithin Adidela, IIT Goa
+# email: nithin.adiela.16003@iitgoa.ac.in
+# Author2: Revanth Sharma Kollegala, IIT Goa
+# email: revanth.sharma.16003@iitgoa.ac.in
+# Author3: Y Sudhakar, IIT Goa
+# email: sudhakar@iitgoa.ac.in
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+ddtSchemes
+{
+    default         CrankNicolson 0.9;
+}
+
+gradSchemes
+{
+    default         Gauss linear;
+    grad(p)         Gauss linear;
+}
+
+divSchemes
+{
+    default         none;
+    // Convective term for transient incompressible flow
+    div(phi,U)      Gauss cubic;
+    
+    // Viscous stress term used by incompressibleFluid
+    div((nuEff*dev2(T(grad(U))))) Gauss linear;
+}
+
+laplacianSchemes
+{
+    default                         Gauss linear corrected;
+
+    laplacian(interpolate(nuEff),U) Gauss linear corrected;
+    laplacian((1|A(U)),p)           Gauss linear corrected;
+}
+
+interpolationSchemes
+{
+    default         linear;
+}
+
+snGradSchemes
+{
+     default         corrected;
+}
+
+wallDist
+{
+    method meshWave;
+}
+
+
+// ************************************************************************* //
