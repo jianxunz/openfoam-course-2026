@@ -307,21 +307,3 @@ Run a script, for example:
 ./Allrun
 ./Allclean
 ```
-
-For this assignment, the most useful command sequence is:
-
-```bash
-cd /work
-cp -r /course/assignments/cylinder .
-cd cylinder
-./Allrun
-python3 plot.py
-```
-
-To clean and rerun:
-
-```bash
-./Allclean
-./Allrun
-python3 plot.py
-```
