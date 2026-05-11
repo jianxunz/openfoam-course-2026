@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+
+echo "======================================"
+echo "Generating mesh for cylinder case"
+echo "======================================"
+
+echo
+echo "Running blockMesh..."
+blockMesh
+
+echo
+echo "Running checkMesh..."
+checkMesh
+
+echo
+echo "Converting mesh/fields at time 0 to VTK..."
+foamToVTK -time 0
+
+echo
+echo "Running Python mesh plotting script..."
+python3 plot_mesh.py
+
+echo
+echo "Mesh generation and visualization completed."

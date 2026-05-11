@@ -17,7 +17,7 @@ This image contains:
 
 ```text
 OpenFOAM Foundation v13
-Python with numpy, matplotlib, and scipy
+Python with numpy, matplotlib, scipy and PyVista
 ```
 
 ---
@@ -97,7 +97,7 @@ docker run --rm -it `
 
 # 5. Run the Cylinder Flow Simulation
 
-# Run the Cylinder Flow Simulation
+# Run the Cylinder Flow Assignment
 
 After entering the Docker container, copy the prepared cylinder case to your working directory:
 
@@ -107,32 +107,87 @@ cp -r /course/assignments/cylinder .
 cd cylinder
 ```
 
-The cylinder case contains the following main files:
+The cylinder case contains the following main scripts:
 
-- `Allrun`: a shell script used to run the main workflow automatically, including mesh generation, mesh checking, and solver execution.
+- `GenMesh.sh`: a shell script used to generate the mesh, check the mesh quality, convert the initial mesh/field data to VTK format, and run `plot_mesh.py` to create mesh-related plots.
 
-- `Allclean`: a shell script used to clean the case directory before rerunning the simulation.
+- `runSimulations`: a shell script used to run the main CFD simulation workflow.
+
+- `Allclean`: a shell script used to clean the case directory before rerunning the mesh generation or simulation.
+
+- `plot_mesh.py`: a Python post-processing script used to visualize the generated mesh, including the full computational domain and the near-cylinder mesh resolution.
 
 - `plot.py`: a Python post-processing script used to plot the drag and lift coefficients, calculate mean values, estimate the RMS lift coefficient, and compute the Strouhal number from the lift-coefficient signal.
 
-To run the simulation, use:
+- `plot_vorticity.py`: a Python post-processing script used to plot vorticity contours from the OpenFOAM results. This provides a simple alternative to using ParaView for visualizing the wake structure.
+
+Make sure the scripts are executable:
 
 ```bash
-./Allrun
+chmod +x GenMesh.sh
+chmod +x runSimulations
+chmod +x Allclean
 ```
 
-After the simulation is finished, run the post-processing script:
+## Step 1: Generate and check the mesh
+
+Run:
+
+```bash
+./GenMesh.sh
+```
+
+This script performs:
+
+```bash
+blockMesh
+checkMesh
+foamToVTK -time 0
+python3 plot_mesh.py
+```
+
+After this step, the mesh is generated and the mesh plots are created.
+
+## Step 2: Run the CFD simulation
+
+Run:
+
+```bash
+./runSimulations
+```
+
+This starts the OpenFOAM simulation.
+
+## Step 3: Post-process force coefficients
+
+After the simulation is finished, run:
 
 ```bash
 python3 plot.py
 ```
 
-To clean the case and run it again:
+This generates plots of the drag and lift coefficients and calculates the main statistical quantities.
+
+## Step 4: Plot vorticity contours
+
+To visualize the wake without using ParaView, run:
+
+```bash
+python3 plot_vorticity.py
+```
+
+This script plots vorticity contours from the simulation results.
+
+## Clean and rerun
+
+To clean the case and start again:
 
 ```bash
 ./Allclean
-./Allrun
+./GenMesh.sh
+./runSimulations
 python3 plot.py
+python3 plot_vorticity.py
 ```
 
 The results are saved in:
@@ -146,46 +201,8 @@ Because `/work` is connected to your local folder, the same files will also appe
 ```text
 OpenFOAM_assignment/cylinder
 ```
+```
 ---
-
-# 6. Exit the Docker Container
-
-```bash
-exit
-```
-
-After exiting, the `cylinder` folder remains on your local computer.
-
----
-
-# Visualization
-
-ParaView is not installed inside the Docker image.
-
-Recommended workflow:
-
-1. Run OpenFOAM inside Docker.
-2. Save results to the local mounted folder.
-3. Open the results with ParaView installed on your own computer.
-
-After exiting Docker:
-
-```bash
-cd OpenFOAM_assignment/cylinder
-touch cylinder.foam
-```
-
-Then open `cylinder.foam` in ParaView.
-
-Alternatively, inside Docker you can export VTK files:
-
-```bash
-cd /work/cylinder
-foamToVTK
-```
-
-Then open the generated `VTK/` folder in ParaView.
-
 ---
 
 # Common Problems

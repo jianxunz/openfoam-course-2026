@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "Running solver..."
+foamRun 2>&1 | tee log.foamRun
+
+echo "Simulation finished."
