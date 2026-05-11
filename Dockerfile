@@ -25,13 +25,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-venv \
     python3-pip \
+    libgl1 \
+    libxrender1 \
+    libxext6 \
+    libsm6 \
+    xvfb \
     && wget -O - https://dl.openfoam.org/gpg.key > /etc/apt/trusted.gpg.d/openfoam.asc \
     && add-apt-repository -y http://dl.openfoam.org/ubuntu \
     && apt-get update \
     && apt-get install -y --no-install-recommends openfoam13 \
     && python3 -m venv /opt/pyenv \
     && /opt/pyenv/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
-    && /opt/pyenv/bin/pip install --no-cache-dir numpy matplotlib scipy \
+    && /opt/pyenv/bin/pip install --no-cache-dir numpy matplotlib scipy pyvista vtk \
     && rm -rf /var/lib/apt/lists/*
 
 # ============================================================
