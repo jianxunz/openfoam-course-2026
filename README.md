@@ -109,7 +109,7 @@ cd cylinder
 
 The cylinder case contains the following main scripts:
 
-- `GenMesh.sh`: a shell script used to generate the mesh, check the mesh quality, convert the initial mesh/field data to VTK format, and run `plot_mesh.py` to create mesh-related plots.
+- `GenMesh`: a shell script used to generate the mesh, check the mesh quality, convert the initial mesh/field data to VTK format, and run `plot_mesh.py` to create mesh-related plots.
 
 - `runSimulations`: a shell script used to run the main CFD simulation workflow.
 
@@ -124,7 +124,7 @@ The cylinder case contains the following main scripts:
 Make sure the scripts are executable:
 
 ```bash
-chmod +x GenMesh.sh
+chmod +x GenMesh
 chmod +x runSimulations
 chmod +x Allclean
 ```
@@ -134,7 +134,7 @@ chmod +x Allclean
 Run:
 
 ```bash
-./GenMesh.sh
+./GenMesh
 ```
 
 This script performs:
@@ -184,7 +184,7 @@ To clean the case and start again:
 
 ```bash
 ./Allclean
-./GenMesh.sh
+./GenMesh
 ./runSimulations
 python3 plot.py
 python3 plot_vorticity.py
