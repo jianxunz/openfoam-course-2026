@@ -30,6 +30,7 @@ Recommended setup:
 - **macOS:** Docker Desktop
 - **Linux:** Docker Engine or Docker Desktop
 
+See DockInstallation.pdf
 ---
 
 # 2. Pull the Course Image
